@@ -1,12 +1,10 @@
 name: Auto Convert to Markdown
 
-# Запускать, когда что-то пушится в папку input
 on:
   push:
     paths:
       - 'input/**'
 
-# Разрешаем роботу записывать файлы в репозиторий
 permissions:
   contents: write
 
@@ -27,9 +25,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          # Устанавливаем playwright для работы с веб-контентом (если нужно markitdown)
-          playwright install
           
+          python -m playwright install --with-deps chromium
+
       - name: Run conversion script
         run: python convert.py
 
@@ -37,9 +35,7 @@ jobs:
         run: |
           git config --global user.name 'GitHub Action Bot'
           git config --global user.email 'action@github.com'
-          # Добавляем всё, что появилось в output
           git add output/*
-          # Проверяем, есть ли изменения перед коммитом
           if git diff --staged --quiet; then
             echo "Нет изменений для сохранения"
           else
